@@ -1,8 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-
-// Import Screens
 import HomeScreen from './HomeScreen';
 import SettingsScreen from './SettingScreen';
 import CustomSidebarMenu from './CustomMenuSideBar';
