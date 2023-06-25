@@ -83,7 +83,6 @@ const RegisterScreen = (props) => {
 
         setLoading(false);
         console.log(responseJson);
-        // If server response message same as Data Matched
         if (responseJson.status === 'success') {
           setIsRegistraionSuccess(true);
           console.log(
@@ -94,7 +93,6 @@ const RegisterScreen = (props) => {
         }
       })
       .catch((error) => {
-        //Hide Loader
         setLoading(false);
         console.error(error);
       });
