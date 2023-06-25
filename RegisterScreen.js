@@ -53,7 +53,7 @@ const RegisterScreen = (props) => {
       alert('Please fill Password');
       return;
     }
-    //Show Loader
+
     setLoading(true);
     var dataToSend = {
       name: userName,
@@ -74,14 +74,13 @@ const RegisterScreen = (props) => {
       method: 'POST',
       body: formBody,
       headers: {
-        //Header Defination
         'Content-Type':
         'application/x-www-form-urlencoded;charset=UTF-8',
       },
     })
       .then((response) => response.json())
       .then((responseJson) => {
-        //Hide Loader
+
         setLoading(false);
         console.log(responseJson);
         // If server response message same as Data Matched
