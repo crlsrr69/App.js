@@ -32,7 +32,7 @@ const CustomSidebarMenu = (props) => {
 
   return (
     <View style={styles.sideMenuContainer}>
-      {/* ...sidebar content */}
+      {}
       <DrawerItem
         label={({ color }) => <Text style={{ color: '#d8d8d8' }}>Logout</Text>}
         onPress={handleLogout}
