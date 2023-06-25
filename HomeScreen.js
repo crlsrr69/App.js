@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { IconButton } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
+import SettingScreen from './SettingScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -12,6 +12,7 @@ const Stack = createStackNavigator();
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
+      <Icon name="person-outline" size={50} color="black" />
       <Text style={styles.text}>Home Screen</Text>
     </View>
   );
@@ -49,28 +50,35 @@ const Marketplace = () => {
   );
 };
 
-const ProfileScreen = () => {
+
+const ProfileScreen = ({ navigation }) => {
+  const navigateToSettings = () => {
+    navigation.navigate('Settings'); 
+  };
+
   return (
     <View style={styles.container}>
-      <Icon name="user" size={50} color="black" />
+      <Icon name="person-outline" size={50} color="black" />
       <Text style={styles.profileText}>Profile Screen</Text>
+      <TouchableOpacity onPress={navigateToSettings}>
+        <Text>Go to Settings</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
 
 const AppNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='Home'
+        name=""
         component={HomeScreen}
         options={({ navigation }) => ({
           headerRight: () => (
-            <IconButton
-              icon={() => <Icon name="user" size={24} color="black" />}
-              onPress={() => navigation.navigate('Profile')} // Navigate to the 'Profile' screen
-              style={styles.headerIcon}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+              <Icon name="person-outline" size={24} color="black" style={styles.headerIcon} />
+            </TouchableOpacity>
           ),
         })}
       />
@@ -79,6 +87,20 @@ const AppNavigator = () => {
         component={ProfileScreen}
         options={{
           title: 'Profile',
+          headerStyle: {
+            backgroundColor: 'lightgray',
+          },
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+          headerTintColor: 'black',
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingScreen}
+        options={{
+          title: 'Settings',
           headerStyle: {
             backgroundColor: 'lightgray',
           },
@@ -100,7 +122,27 @@ const AppTabs = () => {
         inactiveTintColor: 'gray',
         labelStyle: styles.tabLabel,
         style: styles.tabBar,
+        showIcon: true,
       }}
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          if (route.name === 'Home') {
+            iconName = focused ? 'ios-home' : 'ios-home-outline';
+          } else if (route.name === 'My Farm') {
+            iconName = focused ? 'leaf' : 'leaf-outline';
+          } else if (route.name === 'Actions') {
+            iconName = focused ? 'ios-play' : 'ios-play-outline';
+          } else if (route.name === 'Analytics') {
+            iconName = focused ? 'bar-chart' : 'bar-chart-outline';
+          } else if (route.name === 'Marketplace') {
+            iconName = focused ? 'ios-cart' : 'ios-cart-outline';
+          }
+
+          return <Icon name={iconName} size={size} color={color} />;
+        },
+      })}
     >
       <Tab.Screen name="Home" component={AppNavigator} />
       <Tab.Screen name="My Farm" component={MyFarm} />
@@ -110,6 +152,8 @@ const AppTabs = () => {
     </Tab.Navigator>
   );
 };
+
+
 
 const App = () => {
   return (
