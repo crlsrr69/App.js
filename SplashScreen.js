@@ -9,7 +9,7 @@ import {
 import AsyncStorage from '@react-native-community/async-storage';
 
 const SplashScreen = ({navigation}) => {
-  //State for ActivityIndicator animation
+
   const [animating, setAnimating] = useState(true);
 
   useEffect(() => {
