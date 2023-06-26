@@ -1,27 +1,103 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SettingScreen from './SettingScreen';
+import MapView, { Marker } from 'react-native-maps';
+import Geolocation from 'react-native-geolocation-service';
+import axios from 'axios';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const HomeScreen = () => {
+  const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const API_KEY = '9c3eca47f7a57d0542f753ffac3cf219';
+
+  const fetchWeatherData = async () => {
+    Geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        const response = await axios.get(
+          `http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+        );
+
+        setWeatherData(response.data);
+        setLoading(false);
+      },
+      (error) => {
+        console.log('Error fetching location', error);
+        setLoading(false);
+      }
+    );
+  };
+
+  useEffect(() => {
+    fetchWeatherData();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Icon name="person-outline" size={50} color="black" />
-      <Text style={styles.text}>Home Screen</Text>
+      {weatherData && (
+        <>
+          <Text style={styles.text}>{weatherData.name}</Text>
+          <Text style={styles.text}>{weatherData.weather[0].main}</Text>
+          <Text style={styles.text}>{weatherData.main.temp}°C</Text>
+        </>
+      )}
     </View>
   );
 };
 
 const MyFarm = () => {
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setUserLocation({ latitude, longitude });
+      },
+      (error) => {
+        console.log(error);
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>My Farm</Text>
+      {userLocation && (
+        <MapView
+          style={styles.map}
+          region={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          <Marker
+            coordinate={{
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+            }}
+            title="My Farm"
+          />
+        </MapView>
+      )}
     </View>
   );
 };
@@ -50,10 +126,9 @@ const Marketplace = () => {
   );
 };
 
-
 const ProfileScreen = ({ navigation }) => {
   const navigateToSettings = () => {
-    navigation.navigate('Settings'); 
+    navigation.navigate('Settings');
   };
 
   return (
@@ -66,7 +141,6 @@ const ProfileScreen = ({ navigation }) => {
     </View>
   );
 };
-
 
 const AppNavigator = () => {
   return (
@@ -153,8 +227,6 @@ const AppTabs = () => {
   );
 };
 
-
-
 const App = () => {
   return (
     <NavigationContainer>
@@ -168,6 +240,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
   },
   text: {
     fontSize: 17,
@@ -191,3 +267,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
